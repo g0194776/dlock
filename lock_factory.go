@@ -3,6 +3,8 @@ package distributed_lock
 import (
 	"errors"
 	"sync"
+
+	"github.com/coreos/etcd/clientv3"
 )
 
 var (
@@ -11,19 +13,25 @@ var (
 )
 
 type DistributedLocker interface {
-	GetLock() (*DistributedLockStub, error)
-	ReleaseLock() error
+	TryGetLock() error
 }
 
 //This is a simple object which holds by the real lock.
 //Add more contextual information if needed.
 type DistributedLockStub struct {
-	Owner string
+	Owner    string
+	isMaster *int32
 }
 
 type DistributedLockOptions struct {
-	Key        string
-	ETCDKeyTTL int
+	etcdClient  *clientv3.Client
+	Key         string
+	ETCDAddress string
+	TTL         int
+	//It'll be trigger when get lock.
+	HoldingLockFunc func(DistributedLocker, DistributedLockStub)
+	//It'll be trigger when lost lock.
+	LosingLockFunc func(DistributedLocker, DistributedLockStub)
 }
 
 func init() {
@@ -36,6 +44,12 @@ func init() {
 func NewDistributedLock(option DistributedLockOptions) (DistributedLocker, error) {
 	if option.Key == "" {
 		return nil, errors.New("option.Key must be set.")
+	}
+	if option.HoldingLockFunc == nil {
+		return nil, errors.New("option.HoldingLockFunc is required for receiving notification.")
+	}
+	if option.LosingLockFunc == nil {
+		return nil, errors.New("option.LosingLockFunc is required for receiving notification.")
 	}
 	lockObj.Lock()
 	defer lockObj.Unlock()

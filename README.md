@@ -1,4 +1,4 @@
-# distributed-lock
+# Distributed Lock
 
 ## Preface
 After considered many of implementations of distributed lock with Golang, I prefered like to write it by myself. 

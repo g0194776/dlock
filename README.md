@@ -5,7 +5,7 @@ After considered many of implementations of distributed lock with Golang, I pref
 
 This is an ETCD-based implementation and used v3 protocol for performance enhancement. Simple & Easy, enjoy it!
 
-## How to test?
+## How to use it?
 
 #### 1. Start an ETCD instance using Docker container
 ```shell
@@ -23,18 +23,18 @@ dl, err := NewDistributedLock(DistributedLockOptions{
     Key:         "/KEY-SPEC-100",
     ETCDAddress: "http://127.0.0.1:2379", //accessible ETCD instance.
     TTL:         5,
-    //hooking function to receive an event while acquiring the lock.
+    //hook function to receive an event while acquiring the lock.
     HoldingLockFunc: func(locker DistributedLocker, stub DistributedLockStub) {
         fmt.Println("You are master now...!")
 
     },
-    //hooking function to receive an event while losing the lock.
+    //hook function to receive an event while losing the lock.
     LosingLockFunc: func(locker DistributedLocker, stub DistributedLockStub) {
         fmt.Println("You've lost master role, waiting...")
     },
 })
 if err != nil {
-	panic(err)
+    panic(err)
 }
 
 dl.TryGetLock()

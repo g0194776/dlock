@@ -1,4 +1,4 @@
-package distributed_lock
+package dlock
 
 import (
 	"context"
@@ -67,23 +67,3 @@ func (dl *distributedLock) isLockMaster(rsp *clientv3.TxnResponse) bool {
 	}
 	return false
 }
-
-//docker run -d -v /usr/share/ca-certificates/:/etc/ssl/certs -p 4001:4001 -p 2380:2380 -p 2379:2379 \
-//--name etcd quay.io/coreos/etcd:v3.2 \
-//-advertise-client-urls http://192.168.50.203:2379,http://192.168.50.203:4001 \
-//-listen-client-urls http://0.0.0.0:2379,http://0.0.0.0:4001 \
-//-listen-peer-urls http://0.0.0.0:2380 \
-//-initial-cluster-state new
-
-//docker run --net=host  --restart=always -d \
-//--name etcd0 quay.io/coreos/etcd:v3.2 \
-///usr/local/bin/etcd \
-//--name etcd0 \
-//--initial-cluster-state new
-
-//docker run -d --name etcd-server \
-//--publish 2379:2379 \
-//--publish 2380:2380 \
-//--env ALLOW_NONE_AUTHENTICATION=yes \
-//--env ETCD_ADVERTISE_CLIENT_URLS=http://etcd-server:2379 \
-//bitnami/etcd:latest

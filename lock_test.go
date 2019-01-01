@@ -1,4 +1,4 @@
-package distributed_lock
+package dlock
 
 import (
 	"fmt"

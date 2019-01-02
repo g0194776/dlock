@@ -14,6 +14,7 @@ var (
 
 type DistributedLocker interface {
 	TryGetLock() error
+	Close()
 }
 
 //This is a simple object which holds by the real lock.
@@ -21,6 +22,8 @@ type DistributedLocker interface {
 type DistributedLockStub struct {
 	Owner    string
 	isMaster *int32
+	msgChan  chan string
+	lease    *clientv3.LeaseGrantResponse
 }
 
 type DistributedLockOptions struct {
@@ -29,9 +32,9 @@ type DistributedLockOptions struct {
 	ETCDAddress string
 	TTL         int
 	//It'll be trigger when get lock.
-	HoldingLockFunc func(DistributedLocker, DistributedLockStub)
+	HoldingLockFunc func()
 	//It'll be trigger when lost lock.
-	LosingLockFunc func(DistributedLocker, DistributedLockStub)
+	LosingLockFunc func()
 }
 
 func init() {
@@ -50,6 +53,10 @@ func NewDistributedLock(option DistributedLockOptions) (DistributedLocker, error
 	}
 	if option.LosingLockFunc == nil {
 		return nil, errors.New("option.LosingLockFunc is required for receiving notification.")
+	}
+	//set default value.
+	if option.TTL == 0 {
+		option.TTL = 5
 	}
 	lockObj.Lock()
 	defer lockObj.Unlock()

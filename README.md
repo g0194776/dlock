@@ -19,17 +19,17 @@ bitnami/etcd:latest
 
 #### 2. Code Sample
 ```go
-dl, err := NewDistributedLock(DistributedLockOptions{
+dl, err := dlock.NewDistributedLock(DistributedLockOptions{
     Key:         "/KEY-SPEC-100",
     ETCDAddress: "http://127.0.0.1:2379", //accessible ETCD instance.
     TTL:         5,
     //hook function to receive an event while acquiring the lock.
-    HoldingLockFunc: func(locker DistributedLocker, stub DistributedLockStub) {
+    HoldingLockFunc: func() {
         fmt.Println("You are master now...!")
 
     },
     //hook function to receive an event while losing the lock.
-    LosingLockFunc: func(locker DistributedLocker, stub DistributedLockStub) {
+    LosingLockFunc: func() {
         fmt.Println("You've lost master role, waiting...")
     },
 })

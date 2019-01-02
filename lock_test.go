@@ -12,10 +12,10 @@ func Test_SpecifiedKeyNotExists(t *testing.T) {
 		Key:         "/KEY-SPEC-100",
 		ETCDAddress: "http://127.0.0.1:2379",
 		TTL:         5,
-		HoldingLockFunc: func(locker DistributedLocker, stub DistributedLockStub) {
+		HoldingLockFunc: func() {
 			fmt.Println("You are master now...!")
 		},
-		LosingLockFunc: func(locker DistributedLocker, stub DistributedLockStub) {
+		LosingLockFunc: func() {
 			fmt.Println("You've lost master role, waiting...")
 		},
 	})
